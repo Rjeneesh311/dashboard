@@ -12,25 +12,28 @@ export default function Overview() {
     async function loadData() {
       setLoading(true);
       try {
-        // First try to fetch from Supabase
-        const { data: dbMats, error: matErr } = await supabase.from('materials').select('*');
-        const { data: dbPos, error: poErr } = await supabase.from('purchase_orders').select('*');
-        const { data: dbVens, error: venErr } = await supabase.from('vendors').select('*');
+        // Race all 3 queries in parallel with a 3s timeout for fast fallback
+        const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000));
+        const queries = Promise.all([
+          supabase.from('materials').select('*'),
+          supabase.from('purchase_orders').select('*'),
+          supabase.from('vendors').select('*')
+        ]);
         
-        // If the tables are completely empty or error out (due to missing schema populating), fallback to mock
-        if ((!dbMats || dbMats.length === 0) || (matErr || poErr || venErr)) {
-          console.warn('Falling back to mock data until Supabase is fully seeded', matErr);
+        const results = await Promise.race([queries, timeout]);
+        const [matRes, poRes, venRes] = results;
+        
+        if ((!matRes.data || matRes.data.length === 0) || matRes.error || poRes.error || venRes.error) {
           setData(MOCK_DATA);
         } else {
-          // Map DB to matching structure
           setData({
-            materials: dbMats || [],
-            pos: dbPos || [],
-            vendors: dbVens || []
+            materials: matRes.data || [],
+            pos: poRes.data || [],
+            vendors: venRes.data || []
           });
         }
       } catch (e) {
-        console.error("Supabase load error:", e);
+        console.warn("Falling back to mock data:", e);
         setData(MOCK_DATA);
       } finally {
         setLoading(false);

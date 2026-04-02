@@ -11,7 +11,8 @@ export default function Budget() {
     async function fetchData() {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from('materials').select('*');
+        const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000));
+        const { data, error } = await Promise.race([supabase.from('materials').select('*'), timeout]);
         if (!data || data.length === 0 || error) {
           setMaterials(MOCK_DATA.materials);
         } else {
@@ -25,7 +26,6 @@ export default function Budget() {
           })));
         }
       } catch (err) {
-        console.error("Budget load err", err);
         setMaterials(MOCK_DATA.materials);
       } finally {
         setLoading(false);

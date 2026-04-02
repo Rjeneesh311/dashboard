@@ -31,7 +31,8 @@ export default function Vendors() {
     async function fetchVendors() {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from('vendors').select('*').order('quality_score', { ascending: false });
+        const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000));
+        const { data, error } = await Promise.race([supabase.from('vendors').select('*').order('quality_score', { ascending: false }), timeout]);
         if (!data || data.length === 0 || error) {
           const mapped = MOCK_DATA.vendors.map(v => ({
              id: v.id,
@@ -59,7 +60,12 @@ export default function Vendors() {
           setVendors(dynamic);
         }
       } catch (err) {
-        console.error("Failed to load vendors", err);
+        const mapped = MOCK_DATA.vendors.map(v => ({
+           id: v.id, name: v.name, location: v.loc, category: v.cat,
+           contact_person: v.contact, phone: v.phone, quality_score: v.score,
+           ontime: v.ontime, quality: v.quality, stars: v.stars, financial: v.financial
+        }));
+        setVendors(mapped.sort((a,b) => b.quality_score - a.quality_score));
       } finally {
         setLoading(false);
       }

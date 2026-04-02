@@ -34,22 +34,28 @@ export default function Delivery() {
 
   useEffect(() => {
     async function loadPos() {
-      const { data } = await supabase.from('purchase_orders').select('*, vendors(name), materials(name, unit)');
-      
-      let finalPos = MOCK_DATA.pos;
-      if (data && data.length > 0) {
-        finalPos = data.map(p => ({
-          id: p.po_number || p.id,
-          vendor: p.vendors?.name || 'Unknown',
-          material: p.materials?.name || 'Unknown',
-          qty: p.ordered_qty,
-          unit: p.materials?.unit || 'Units'
-        }));
-      }
+      try {
+        const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000));
+        const { data } = await Promise.race([supabase.from('purchase_orders').select('*, vendors(name), materials(name, unit)'), timeout]);
+        
+        let finalPos = MOCK_DATA.pos;
+        if (data && data.length > 0) {
+          finalPos = data.map(p => ({
+            id: p.po_number || p.id,
+            vendor: p.vendors?.name || 'Unknown',
+            material: p.materials?.name || 'Unknown',
+            qty: p.ordered_qty,
+            unit: p.materials?.unit || 'Units'
+          }));
+        }
 
-      setPos(finalPos);
-      if (finalPos.length > 0) {
-        handlePoChange(finalPos[0].id, finalPos);
+        setPos(finalPos);
+        if (finalPos.length > 0) {
+          handlePoChange(finalPos[0].id, finalPos);
+        }
+      } catch {
+        setPos(MOCK_DATA.pos);
+        if (MOCK_DATA.pos.length > 0) handlePoChange(MOCK_DATA.pos[0].id, MOCK_DATA.pos);
       }
       
       const roleName = localStorage.getItem('demo_name') || 'Admin';

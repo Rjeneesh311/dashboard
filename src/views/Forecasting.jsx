@@ -11,14 +11,14 @@ export default function Forecasting() {
     async function loadData() {
       setLoading(true);
       try {
-        const { data: dbMats } = await supabase.from('materials').select('*');
-        if (!dbMats || dbMats.length === 0) {
+        const timeout = new Promise((_, reject) => setTimeout(() => reject('timeout'), 3000));
+        const result = await Promise.race([supabase.from('materials').select('*'), timeout]);
+        if (!result.data || result.data.length === 0) {
           setData(MOCK_DATA);
         } else {
-          setData({ materials: dbMats, pos: [], vendors: [] });
+          setData({ materials: result.data, pos: [], vendors: [] });
         }
       } catch (err) {
-        console.error("Forecast load error", err);
         setData(MOCK_DATA);
       } finally {
         setLoading(false);
