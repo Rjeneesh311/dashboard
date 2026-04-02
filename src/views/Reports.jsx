@@ -35,40 +35,40 @@ export default function Reports() {
 
   const handleExport = async (type) => {
     if (type === 'Printable PDF') {
-        const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text("GMRCL Procurement Analytics Report", 20, 20);
-        doc.setFontSize(12);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
-        doc.text(`Total Budget: ${data.tb}`, 20, 40);
-        doc.text(`Total Spent: ${data.ts}`, 20, 50);
-        doc.text(`Active POs: ${data.activePOs}`, 20, 60);
-        doc.text(`Efficiency: ${data.pe}%`, 20, 70);
-        
-        const blob = doc.output('blob');
-        const fileName = `weekly-report-${Date.now()}.pdf`;
-        
-        try {
-            const { data: uploadData, error } = await supabase
-                .storage
-                .from('reports')
-                .upload(fileName, blob, {
-                    contentType: 'application/pdf',
-                    upsert: true
-                });
-                
-            if (error) {
-                console.error("Storage Error:", error);
-                alert("Supabase Error: Please create a public bucket named 'reports' in your Supabase dashboard first!");
-            } else {
-                const { data: { publicUrl } } = supabase.storage.from('reports').getPublicUrl(fileName);
-                alert(`PDF Generated & Uploaded to Supabase Successfully!\nURL: ${publicUrl}`);
-                window.open(publicUrl, '_blank');
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Upload failed.");
-        }
+      try {
+          const doc = new jsPDF();
+          doc.setFontSize(16);
+          doc.text("GMRCL Procurement Analytics Report", 20, 20);
+          doc.setFontSize(12);
+          doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
+          doc.text(`Total Budget: ${data.tb}`, 20, 40);
+          doc.text(`Total Spent: ${data.ts}`, 20, 50);
+          doc.text(`Active POs: ${data.activePOs}`, 20, 60);
+          doc.text(`Efficiency: ${data.pe}%`, 20, 70);
+          
+          const blob = doc.output('blob');
+          const fileName = `weekly-report-${Date.now()}.pdf`;
+          
+          const { data: uploadData, error } = await supabase
+              .storage
+              .from('reports')
+              .upload(fileName, blob, {
+                  contentType: 'application/pdf',
+                  upsert: true
+              });
+              
+          if (error) {
+              console.error("Storage Error:", error);
+              alert("Supabase Error: Please create a public bucket named 'reports' in your Supabase dashboard first!");
+          } else {
+              const { data: { publicUrl } } = supabase.storage.from('reports').getPublicUrl(fileName);
+              alert(`PDF Generated & Uploaded to Supabase Successfully!\nURL: ${publicUrl}`);
+              window.open(publicUrl, '_blank');
+          }
+      } catch (err) {
+          console.error("PDF Generator Error:", err);
+          alert("Error generating PDF. Technical details: " + err.message);
+      }
     } else {
         alert(`${type} Report Exported for further analysis.`);
     }
