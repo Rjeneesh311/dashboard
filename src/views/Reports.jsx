@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MOCK_DATA } from '../data/mockData';
 import { supabase } from '../services/supabaseClient';
+import { jsPDF } from 'jspdf';
 
 export default function Reports() {
   const [data, setData] = useState(null);
@@ -34,8 +35,17 @@ export default function Reports() {
 
   const handleExport = async (type) => {
     if (type === 'Printable PDF') {
-        const content = `GMRCL Procurement Analytics Report\nDate: ${new Date().toLocaleDateString()}\nBudget: ${data.tb}\nSpent: ${data.ts}\nActive POs: ${data.activePOs}\nEfficiency: ${data.pe}%`;
-        const blob = new Blob([content], { type: 'application/pdf' }); // Mock PDF generation
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text("GMRCL Procurement Analytics Report", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
+        doc.text(`Total Budget: ${data.tb}`, 20, 40);
+        doc.text(`Total Spent: ${data.ts}`, 20, 50);
+        doc.text(`Active POs: ${data.activePOs}`, 20, 60);
+        doc.text(`Efficiency: ${data.pe}%`, 20, 70);
+        
+        const blob = doc.output('blob');
         const fileName = `weekly-report-${Date.now()}.pdf`;
         
         try {
