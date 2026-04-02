@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MOCK_DATA } from '../data/mockData';
+import { supabase } from '../services/supabaseClient';
 
 export default function Reports() {
   const [data, setData] = useState(null);
@@ -31,8 +32,36 @@ export default function Reports() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleExport = (type) => {
-    alert(`${type} Report Exported for further analysis.`);
+  const handleExport = async (type) => {
+    if (type === 'Printable PDF') {
+        const content = `GMRCL Procurement Analytics Report\nDate: ${new Date().toLocaleDateString()}\nBudget: ${data.tb}\nSpent: ${data.ts}\nActive POs: ${data.activePOs}\nEfficiency: ${data.pe}%`;
+        const blob = new Blob([content], { type: 'application/pdf' }); // Mock PDF generation
+        const fileName = `weekly-report-${Date.now()}.pdf`;
+        
+        try {
+            const { data: uploadData, error } = await supabase
+                .storage
+                .from('reports')
+                .upload(fileName, blob, {
+                    contentType: 'application/pdf',
+                    upsert: true
+                });
+                
+            if (error) {
+                console.error("Storage Error:", error);
+                alert("Supabase Error: Please create a public bucket named 'reports' in your Supabase dashboard first!");
+            } else {
+                const { data: { publicUrl } } = supabase.storage.from('reports').getPublicUrl(fileName);
+                alert(`PDF Generated & Uploaded to Supabase Successfully!\nURL: ${publicUrl}`);
+                window.open(publicUrl, '_blank');
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Upload failed.");
+        }
+    } else {
+        alert(`${type} Report Exported for further analysis.`);
+    }
   };
 
   if (loading || !data) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading Reports Engine...</div>;
@@ -46,7 +75,7 @@ export default function Reports() {
     <div>
       <div className="section-title" style={{ marginBottom: '16px' }}>📑 Reports & Analytics Dashboard</div>
       
-      <div className="grid5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '16px' }}>
+      <div className="kpi-row" style={{ marginBottom: '16px' }}>
         <div className="card kpi green">
           <div className="lbl">Procurement Efficiency</div>
           <div className="val">{data.pe}%</div>
@@ -69,7 +98,7 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="grid2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+      <div className="grid2" style={{ marginBottom: '16px' }}>
         <div className="card">
           <div className="section-title" style={{ fontSize: '14px', marginBottom: '12px' }}>📈 Procurement Trend (₹ Lakhs/Month)</div>
           <div className="bar-chart" style={{ height: '160px', alignItems: 'flex-end', display: 'flex', gap: '12px', padding: '12px 0' }}>
@@ -114,7 +143,7 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="grid2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+      <div className="grid2" style={{ marginBottom: '16px' }}>
         <div className="card" style={{ padding: 0, overflowX: 'auto' }}>
           <div className="section-title" style={{ fontSize: '14px', padding: '16px', borderBottom: '1px solid var(--border)', margin: 0 }}>
             🏭 Vendor Ranking Leadboard

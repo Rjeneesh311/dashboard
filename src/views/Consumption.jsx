@@ -56,7 +56,7 @@ export default function Consumption() {
     <div>
       <div className="section-title" style={{ marginBottom: '16px' }}>⛏️ Consumption & Site Usage Analysis</div>
 
-      <div className="grid5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '16px' }}>
+      <div className="kpi-row" style={{ marginBottom: '16px' }}>
         <div className="card kpi blue">
           <div className="lbl">Materials Tracked</div>
           <div className="val">{data.length}</div>
@@ -79,7 +79,7 @@ export default function Consumption() {
         </div>
       </div>
 
-      <div className="grid2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+      <div className="grid2" style={{ marginBottom: '16px' }}>
         <div className="card">
           <div className="section-title" style={{ fontSize: '14px', marginBottom: '12px' }}>📊 Planned vs Actual Variance</div>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', fontSize: '11px', fontWeight: 600 }}>

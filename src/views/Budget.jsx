@@ -66,7 +66,7 @@ export default function Budget() {
     <div>
       <div className="section-title">💰 Budget & Cost Control Dashboard</div>
 
-      <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+      <div className="kpi-row" style={{ marginBottom: '16px' }}>
           <div className="card kpi blue">
               <div className="lbl">BOQ Budget</div>
               <div className="val">{fmt(totalBudget)}</div>

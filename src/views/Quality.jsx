@@ -46,7 +46,7 @@ export default function Quality() {
     <div>
       <div className="section-title" style={{ marginBottom: '16px' }}>🔬 Quality Control & Inspection</div>
       
-      <div className="grid5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginBottom: '16px' }}>
+      <div className="kpi-row" style={{ marginBottom: '16px' }}>
         <div className="card kpi blue">
           <div className="lbl">Total Inspections</div>
           <div className="val">{total}</div>
@@ -69,7 +69,7 @@ export default function Quality() {
         </div>
       </div>
 
-      <div className="grid2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+      <div className="grid2" style={{ marginBottom: '16px' }}>
         <div className="card">
           <div className="section-title" style={{ fontSize: '14px', marginBottom: '16px' }}>🥧 Pass / Fail Distribution</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px', justifyContent: 'center' }}>

@@ -72,7 +72,7 @@ export default function Forecasting() {
             <div className={`tab ${forecastDays === 60 ? 'active' : ''}`} onClick={() => setForecastDays(60)}>2 Months</div>
         </div>
 
-        <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div className="kpi-row" style={{ marginBottom: '16px' }}>
             <div className="card kpi blue"><div className="lbl">Forecast Period</div><div className="val">{durLabel}</div></div>
             <div className="card kpi red"><div className="lbl">Critical Shortage</div><div className="val">{criticalCount}</div></div>
             <div className="card kpi amber"><div className="lbl">Order Required</div><div className="val">{orderNowCount}</div></div>

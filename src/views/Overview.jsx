@@ -109,7 +109,7 @@ export default function Overview() {
             </div>
         </div>
 
-        <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(6, 1fr)', marginBottom: '16px' }}>
+        <div className="kpi-row" style={{ marginBottom: '16px' }}>
             {kpiHtml}
         </div>
 

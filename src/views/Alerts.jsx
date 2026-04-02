@@ -81,7 +81,7 @@ export default function Alerts() {
     <div>
       <div className="section-title" style={{ marginBottom: '16px' }}>🔔 Alerts & Action Center</div>
       
-      <div className="grid4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }}>
+      <div className="kpi-row" style={{ marginBottom: '16px' }}>
         <div className="card kpi blue">
           <div className="lbl">Total Alerts</div>
           <div className="val">{alerts.length}</div>

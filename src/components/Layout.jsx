@@ -33,6 +33,7 @@ export default function Layout() {
     const navigate = useNavigate();
     const location = useLocation();
     const [timeStr, setTimeStr] = useState('');
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
     
     // Retrieve mock/prototype credentials since Supabase auth doesn't have real users yet
     const userName = localStorage.getItem('demo_name') || 'Guest User';
@@ -59,6 +60,7 @@ export default function Layout() {
     return (
         <div id="appContainer" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <div className="topbar">
+                <button className="hamburger" onClick={() => setSidebarOpen(!isSidebarOpen)}>☰</button>
                 <img src="https://www.gujaratmetrorail.com/favicon.ico" alt="GMRCL" style={{ height: '36px', borderRadius: '4px', background: '#fff', padding: '2px' }} onError={(e) => e.target.style.display='none'} />
                 <h1>MRP Dashboard - Material Requirement Planning & Procurement System</h1>
                 <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -76,13 +78,22 @@ export default function Layout() {
             </div>
 
             <div className="layout">
-                <div className="sidebar" id="sidebar">
+                {/* Mobile Sidebar Overlay */}
+                <div 
+                    className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} 
+                    onClick={() => setSidebarOpen(false)}
+                ></div>
+
+                <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`} id="sidebar">
                     <div className="sec">Navigation</div>
                     {navTabs.map(tab => (
                         <div 
                             key={tab} 
                             className={`nav ${location.pathname.includes(tab) || (location.pathname === '/dashboard' && tab === 'overview') ? 'active' : ''}`}
-                            onClick={() => navigate(`/dashboard/${tab === 'overview' ? '' : tab}`)}
+                            onClick={() => {
+                                setSidebarOpen(false);
+                                navigate(`/dashboard/${tab === 'overview' ? '' : tab}`);
+                            }}
                         >
                             {/* In a real scenario we use Lucide icons here mapped to tabs */}
                             {TAB_LABELS[tab] || tab}
